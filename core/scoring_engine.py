@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
-
 BUYER_WEIGHTS = {
     "import_signal": 0.24,
     "company_strength": 0.18,
@@ -93,6 +90,22 @@ def buyer_score(row: dict) -> float:
     return round(clamp(score), 1)
 
 
+def response_likelihood(row: dict) -> float:
+    """Estimated likelihood of getting a usable reply quickly; not a guarantee."""
+    score = (
+        0.36 * clamp(row.get("email_quality_score", 0))
+        + 0.26 * clamp(row.get("decision_access", 35))
+        + 0.16 * clamp(row.get("contact_quality", 20))
+        + 0.12 * clamp(row.get("buying_signal", 50))
+        + 0.10 * clamp(row.get("source_confidence", 50))
+    )
+    if row.get("whatsapp"):
+        score += 3
+    if row.get("decision_maker") and row.get("email"):
+        score += 4
+    return round(min(96.0, clamp(score)), 1)
+
+
 def estimated_customer_probability(row: dict) -> float:
     """
     Commercial prioritization estimate, not a statistical guarantee.
@@ -102,11 +115,13 @@ def estimated_customer_probability(row: dict) -> float:
     dm = title_strength(row.get("decision_title", ""))
     email_q = clamp(row.get("email_quality_score", 0))
     recent_signal = clamp(row.get("buying_signal", 50))
+    response = response_likelihood(row)
     probability = (
-        0.62 * base
-        + 0.13 * dm
-        + 0.15 * email_q
+        0.54 * base
+        + 0.12 * dm
+        + 0.12 * email_q
         + 0.10 * recent_signal
+        + 0.12 * response
     )
     return round(min(96.0, clamp(probability)), 1)
 
@@ -125,6 +140,8 @@ def explain_score(row: dict) -> str:
         reasons.append("decision maker identified")
     if row.get("email_quality_score", 0) >= 80:
         reasons.append("strong email quality")
+    if row.get("response_likelihood", 0) >= 80:
+        reasons.append("high estimated reply likelihood")
     if row.get("whatsapp"):
         reasons.append("public WhatsApp available")
     return "; ".join(reasons) if reasons else "requires deeper verification"
