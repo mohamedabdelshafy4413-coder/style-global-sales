@@ -1,19 +1,31 @@
-# 📄 Document question answering template
+# STYLE Buyer Command Center
 
-A simple Streamlit app that answers questions about an uploaded document via OpenAI's GPT-3.5.
+Streamlit app for ranking the strongest potential natural-stone importers/distributors across 10 markets.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://document-question-answering-template.streamlit.app/)
+## Main capabilities
+- Serper web discovery
+- Public website email / phone / WhatsApp extraction
+- Apollo People Search for procurement / purchasing / sourcing / import decision makers
+- Optional Apollo email enrichment with a user-controlled credit limit
+- Buyer opportunity scoring
+- Top 50 ranking
+- CSV / Excel export
 
-### How to run it on your own machine
+## Streamlit Secrets
 
-1. Install the requirements
+Add these in Streamlit Community Cloud → App Settings → Secrets:
 
-   ```
-   $ pip install -r requirements.txt
-   ```
+```toml
+SERPER_API_KEY = "YOUR_SERPER_KEY"
+APOLLO_API_KEY = "YOUR_APOLLO_KEY"
+```
 
-2. Run the app
+Never commit real API keys to GitHub.
 
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+## Deploy
+- Repository: `mohamedabdelshafy4413-coder/style-global-sales`
+- Branch: `main`
+- Main file path: `app.py`
+
+## Important
+This app ranks research/sales opportunity. It does not prove actual historical import volume unless a shipment/import database is connected.
